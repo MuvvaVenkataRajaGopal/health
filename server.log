@@ -1,0 +1,7 @@
+◇ injected env (4) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+Starting in-memory MongoDB...
+MongoDB running at: mongodb://127.0.0.1:27017/
+Connected to in-memory MongoDB
+Seeded 55 foods
+◇ injected env (0) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+Server running on http://localhost:5000
