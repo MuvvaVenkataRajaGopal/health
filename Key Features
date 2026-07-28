@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nutrition Assistant</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --accent: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 20px;
+    }
+
+    header {
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .card h2 {
+      font-size: 1.2rem;
+      margin-bottom: 16px;
+      border-bottom: 2px solid var(--bg);
+      padding-bottom: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--text-muted);
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+
+    button {
+      background-color: var(--primary);
+      color: white;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #1d4ed8;
+    }
+
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat-box {
+      background-color: var(--bg);
+      padding: 12px;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .stat-box .val {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .stat-box .lbl {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .progress-bar-container {
+      margin-top: 8px;
+    }
+
+    .progress-bar {
+      height: 10px;
+      background-color: var(--border);
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background-color: var(--accent);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    ul.log-list {
+      list-style: none;
+      margin-top: 12px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    ul.log-list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Nutrition Assistant</h1>
+    <p style="color: var(--text-muted);">Track your dietary goals and daily macronutrients.</p>
+  </header>
+
+  <div class="grid">
+    
+    <!-- 1. USER PROFILE & TARGETS -->
+    <div class="card">
+      <h2>User Profile & Plan Target</h2>
+      <form id="profileForm">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" value="Muvva" required />
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <div class="form-group" style="flex: 1;">
+            <label for="weight">Weight (kg)</label>
+            <input type="number" id="weight" value="70" required />
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label for="height">Height (cm)</label>
+            <input type="number" id="height" value="175" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="goal">Diet Goal</label>
+          <select id="goal">
+            <option value="maintenance">Weight Maintenance</option>
+            <option value="loss">Weight Loss (Calorie Deficit)</option>
+            <option value="gain">Muscle Gain (Calorie Surplus)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="targetCalories">Daily Calorie Target (kcal)</label>
+          <input type="number" id="targetCalories" value="2000" required />
+        </div>
+        <button type="submit">Update Targets</button>
+      </form>
+    </div>
+
+    <!-- 2. FOOD LOGGING -->
+    <div class="card">
+      <h2>Log Food Consumption</h2>
+      <form id="foodForm">
+        <div class="form-group">
+          <label for="foodSelect">Select Food Item</label>
+          <select id="foodSelect">
+            <option value="oats">Oatmeal (1 cup) - 150 kcal | P: 5g, C: 27g, F: 3g</option>
+            <option value="chicken">Chicken Breast (100g) - 165 kcal | P: 31g, C: 0g, F: 3.6g</option>
+            <option value="rice">Brown Rice (1 cup) - 215 kcal | P: 5g, C: 45g, F: 1.8g</option>
+            <option value="egg">Boiled Egg (1 large) - 78 kcal | P: 6g, C: 0.6g, F: 5g</option>
+            <option value="apple">Apple (1 medium) - 95 kcal | P: 0.5g, C: 25g, F: 0.3g</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="servings">Servings</label>
+          <input type="number" id="servings" step="0.5" value="1" min="0.5" required />
+        </div>
+        <button type="submit">Add to Daily Log</button>
+      </form>
+
+      <div style="margin-top: 16px;">
+        <label>Today's Logged Items</label>
+        <ul id="logList" class="log-list">
+          <li style="color: var(--text-muted);">No entries added today.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 3. NUTRITIONAL ANALYSIS & PROGRESS -->
+    <div class="card">
+      <h2>Daily Nutritional Summary</h2>
+      
+      <div class="stats-container">
+        <div class="stat-box">
+          <div class="val" id="consumedCalories">0</div>
+          <div class="lbl">Calories Consumed</div>
+        </div>
+        <div class="stat-box">
+          <div class="val" id="remainingCalories">2000</div>
+          <div class="lbl">Calories Remaining</div>
+        </div>
+      </div>
+
+      <div class="progress-bar-container">
+        <label style="display: flex; justify-content: space-between;">
+          <span>Calorie Goal Progress</span>
+          <span id="caloriePercent">0%</span>
+        </label>
+        <div class="progress-bar">
+          <div class="progress-fill" id="calorieProgress"></div>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <label>Macronutrient Breakdown</label>
+        <div class="stats-container" style="grid-template-columns: repeat(3, 1fr); margin-top: 8px;">
+          <div class="stat-box">
+            <div class="val" id="totalProtein" style="font-size: 1.1rem; color: #ef4444;">0g</div>
+            <div class="lbl">Proteins</div>
+          </div>
+          <div class="stat-box">
+            <div class="val" id="totalCarbs" style="font-size: 1.1rem; color: #f59e0b;">0g</div>
+            <div class="lbl">Carbs</div>
+          </div>
+          <div class="stat-box">
+            <div class="val" id="totalFats" style="font-size: 1.1rem; color: #10b981;">0g</div>
+            <div class="lbl">Fats</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    // Mock Food Database
+    const foodDatabase = {
+      oats: { name: 'Oatmeal (1 cup)', calories: 150, protein: 5, carbs: 27, fat: 3 },
+      chicken: { name: 'Chicken Breast (100g)', calories: 165, protein: 31, carbs: 0, fat: 3.6 },
+      rice: { name: 'Brown Rice (1 cup)', calories: 215, protein: 5, carbs: 45, fat: 1.8 },
+      egg: { name: 'Boiled Egg (1 large)', calories: 78, protein: 6, carbs: 0.6, fat: 5 },
+      apple: { name: 'Apple (1 medium)', calories: 95, protein: 0.5, carbs: 25, fat: 0.3 }
+    };
+
+    // App State
+    let targetCalories = 2000;
+    let loggedItems = [];
+
+    // DOM Elements
+    const profileForm = document.getElementById('profileForm');
+    const foodForm = document.getElementById('foodForm');
+    const logList = document.getElementById('logList');
+    const consumedCaloriesEl = document.getElementById('consumedCalories');
+    const remainingCaloriesEl = document.getElementById('remainingCalories');
+    const calorieProgressEl = document.getElementById('calorieProgress');
+    const caloriePercentEl = document.getElementById('caloriePercent');
+    const totalProteinEl = document.getElementById('totalProtein');
+    const totalCarbsEl = document.getElementById('totalCarbs');
+    const totalFatsEl = document.getElementById('totalFats');
+
+    // Update Targets
+    profileForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      targetCalories = parseInt(document.getElementById('targetCalories').value, 10);
+      updateDashboard();
+    });
+
+    // Log Food Item
+    foodForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const foodKey = document.getElementById('foodSelect').value;
+      const servings = parseFloat(document.getElementById('servings').value);
+
+      const baseFood = foodDatabase[foodKey];
+      const entry = {
+        name: baseFood.name,
+        servings: servings,
+        calories: baseFood.calories * servings,
+        protein: baseFood.protein * servings,
+        carbs: baseFood.carbs * servings,
+        fat: baseFood.fat * servings
+      };
+
+      loggedItems.push(entry);
+      updateDashboard();
+    });
+
+    // Recalculate Dashboard Stats
+    function updateDashboard() {
+      let totals = loggedItems.reduce((acc, item) => {
+        acc.calories += item.calories;
+        acc.protein += item.protein;
+        acc.carbs += item.carbs;
+        acc.fat += item.fat;
+        return acc;
+      }, { calories: 0, protein: 0, carbs: 0, fat: 0 });
+
+      // Update Calorie Display
+      consumedCaloriesEl.textContent = Math.round(totals.calories);
+      const remaining = targetCalories - totals.calories;
+      remainingCaloriesEl.textContent = Math.round(remaining);
+
+      // Update Progress Bar
+      const percentage = Math.min(Math.round((totals.calories / targetCalories) * 100), 100);
+      calorieProgressEl.style.width = `${percentage}%`;
+      caloriePercentEl.textContent = `${percentage}%`;
+
+      // Update Macros
+      totalProteinEl.textContent = `${totals.protein.toFixed(1)}g`;
+      totalCarbsEl.textContent = `${totals.carbs.toFixed(1)}g`;
+      totalFatsEl.textContent = `${totals.fat.toFixed(1)}g`;
+
+      // Render Logs
+      renderLogs();
+    }
+
+    // Render Logged List
+    function renderLogs() {
+      if (loggedItems.length === 0) {
+        logList.innerHTML = '<li style="color: var(--text-muted);">No entries added today.</li>';
+        return;
+      }
+
+      logList.innerHTML = loggedItems.map((item) => `
+        <li>
+          <span><strong>${item.name}</strong> (${item.servings}x)</span>
+          <span>${Math.round(item.calories)} kcal</span>
+        </li>
+      `).join('');
+    }
+  </script>
+</body>
+</html>
